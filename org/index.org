@@ -1,0 +1,14 @@
+#+TITLE: Blog
+#+AUTHOR: Luis Higino
+
+* Conteúdo
+
+[[file:sitemap.org][Acesse o mapa do site.]]
+
+* Sobre mim
+
+Meu nome é Luis Henrique, mas normalmente me conhecem por apelidos como Nanis e México, então sinta-se a vontade de me chamar como quiser. Sou estudante de Ciência da Computação na UFMG e entrei no curso no segundo semestre de 2022.
+
+Desde que comecei meu ensino médio no CEFET-MG, onde cursei também o curso técnico em informática, venho usando Linux ativamente como meu SO principal. Já usei praticamente todas as distros mais reconhecidas e algumas obscuras, como Gentoo e Artix. Hoje em dia uso majoritariamente uma chamada GNU Guix.
+
+Comecei esse blog, principalmente, uma forma de externalizar algumas coisas úteis que aprendi ao longo dos anos para quando eu precisar delas de novo e ter esquecido. Espero que alguma delas seja útil pra você também :).

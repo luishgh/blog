@@ -1,0 +1,54 @@
+#+TITLE: Meu fluxo de trabalho com máquinas virtuais
+#+AUTHOR: Luis Higino
+#+DATE: 2023-07-12
+
+* Motivação
+
+Frequentemente, seja em trabalhos da faculdade ou em projetos pessoais, preciso garantir que meu código roda em um ambiente "padrão". Como "padrão", eu quero dizer uma instalação de Ubuntu levemente atualizada — costumo usar a versão LTS mais recente como referência. Isso por que, geralmente, quem vai avaliar/usar esses programas tende a estar usando um ambiente mais ou menos parecido com este. Isso é um problema, pois eu tenho o péssimo hábito de usar um ambiente extremamente não ortodoxo, e já ocorreu de programas e configurações quebrarem quando alguém mais são testava minhas coisas.
+
+Tendo isso em mente, comecei a usar de máquinas virtuais de ambientes mais comuns para testar projetos de forma mais confiável, geralmente logo antes do momento de /deploy/ / entrega.
+
+* Problemas
+
+Antigamente, eu confiava que, caso tudo estivesse certo em meu sistema, provavelmente estaria certo em outros — eu era um *idiota*. Ocasionalmente, quando se tratava de trabalhos em grupo, eu pedia para os outros integrantes conferirem se estava tudo certo para eles, o que resolve o problema, mas não é sempre possível. Quando fui desenvolver meu TCC do técnico no 3º ano do ensino médio, eu usei um sistema de CI — Github Actions — para conferir se o projeto compilava com as versões que queríamos suportar do Python 3, o que é provavelmente a melhor solução para testar um projeto em diferentes ambientes, mas é também a mais complexa.
+
+Eu queria uma forma simples de conferir de forma descomprometida, mas confiável, que meu código rodava em certo ambiente. A solução que encontrei foram *máquinas virtuais*. Porém, o problema era que eu só conhecia o VirtualBox e suas máquinas virtuais eram lentas e nada práticas. Foi então que, em meados de 2020, eu conheci o virt-manager, que trazia uma interface mais simples, mais direta ao ponto e máquinas virtuais muito mais performáticas. Comecei a usar ele no lugar do VirtualBox para algumas matérias do ensino técnico e me habituar mais com a ferramenta.
+
+Foi então que entendi melhor como o virt-manager funciona. O virt-manager é apenas um cliente gráfico para gerenciar máquinas virtuais através do libvirt, que é a verdadeira estrela do show. Ele quem generaliza tecnologias como KVM, Xen, QEMU e outras para fornecer uma interface relativamente simples para o usuário final. A melhor parte é que o libvirt vem com ferramentas de linhas de comando, o que pessoalmente seria melhor ainda pra mim do que o que o virt-manager já oferecia.
+
+* Usando as ferramentas de comando do libvirt
+
+Nesse post, não pretendo trazer um tutorial de como instalar e configurar o uso do virt-manager ou do libvirt sozinho, pois acredito que já existam materiais excelentes no assunto pela internet e vou deixar os que eu pessoalmente usei linkados no final.
+
+O libvirt traz na sua instalação um programa de terminal chamado ~virsh~, que é basicamente capaz da maioria das tarefas usuais no uso e administração de máquinas virtuais.
+
+Tendo instalado a máquina, seja pela interface gráfica do virt-manager ou pelo ~virt-install~, um programa de terminal incluído na instalação do virt-manager, temos os seguintes comandos que eu considero os mais úteis no dia a dia:
+
+- ~virsh net-start <rede>~ :: esse comando serve para ligar uma rede previamente definida, as máquinas virtuais do libvirt usam essas redes para se comunicar com a Internet.
+- ~virsh net-destroy <rede>~ :: esse comando com nome amedrontador serve para desligar a rede, o que normalmente não costuma ser necessário, mas considero útil saber.
+- ~virsh list --all~ :: esse comando lista todas as suas máquinas virtuais, a flag ~--all~ serve para que máquinas desligadas também apareçam.
+- ~virsh start <máquina>~ :: esse comando liga a máquina virtual no plano de fundo.
+- ~virsh shutdown <máquina>~ :: esse comando serve para gentilmente desligar a máquina virtual no plano de fundo.
+- ~virsh net-dhcp-leases <rede>~ :: esse comando enorme serve para conferir informações gerais de conexão de todas as máquinas virtuais conectadas com a rede.
+
+Com apenas esses comandos, é possível construir um fluxo de trabalho que eu considero bem prático:
+
+1. Iniciar o daemon do Libvirt, o =libvirtd=, caso ele não esteja rodando.
+2. Ligar a rede =default=, a rede padrão que muitas vezes já vem pronta nas instalações do libvirt / virt-manager.
+3. Ligar a máquina virtual pelo comando ~virsh start <máquina>~.
+4. Após alguns segundos, conferir o IP local da máquina com ~virsh net-dhcp-leases default~.
+5. Dar ssh na máquina e começar a usar ela do terminal do meu SO.
+
+Dessa forma, eu consigo em uma pequena sequência de comandos ligar e entrar na máquina virtual, isso tudo sem sair do conforto do terminal do meu SO. Esse fluxo inclusive lida muito bem com situações onde múltiplas máquinas virtuais são necessárias ao mesmo tempo, o que é raro, mas já aconteceu comigo uma vez quando eu queria saber a versão padrão de instalação do Python e algumas outras coisas em certas distribuições Linux.
+
+Acho interessante destacar que, para esse fluxo funcionar, é necessário que o SO da máquina virtual tenha o daemon do OpenSSH instalado e rodando no /boot/. Para agilizar o processo — e minimizar o uso de disco — eu costumo usar as versões de servidor das distribuições quando possível, como o Ubuntu Server e o Fedora Server, já que elas normalmente já vem com o daemon do OpenSSH instalado e configurado e não vêm com pacotes pesados que vou acabar não usando, como um ambiente desktop.
+
+* Conclusão
+
+É claro que usar de máquinas virtuais para testar projetos não substitui um bom sistema de CI em escalas maiores, mas acho um meio termo bom para, por exemplo, testar se as instruções de um =README.md= de um projeto de tamanho pequeno / médio está funcionando na LTS mais recente do Ubuntu.
+
+* Referências e materiais adicionais
+
+- [[https://ubuntu.com/server/docs/virtualization-virt-tools]]
+- [[https://joshrosso.com/docs/2020/2020-05-06-linux-hypervisor-setup/]]
+- [[https://wiki.libvirt.org/index.html]]

@@ -1,0 +1,5 @@
+#+TITLE: Mapa
+
+- [[file:index.org][Blog]]
+- posts
+  - [[file:posts/vm-workflow.org][Meu fluxo de trabalho com máquinas virtuais]]
